@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: commerciumx-deployment
+  labels:
+    app: commerciumx
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: commerciumx
+  template:
+    metadata:
+      labels:
+        app: commerciumx
+    spec:
+      containers:
+      - name: commerciumx
+        image: commerciumx/commerciumx-node:1.8.1.1
+        ports:
+        - containerPort: 1911
+          protocol: TCP
+        - containerPort: 30303
+          protocol: TCP
+        - containerPort: 30303
+          protocol: UDP
