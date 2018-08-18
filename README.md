@@ -9,6 +9,8 @@ TODO: Add validator and registry addresses
 
 TODO: Deploy contracts
 
+TODO: Deploy Apostille services
+
 TODO: Integrate BTC Relay
 
 TODO: Change docker from private repo to public repo
