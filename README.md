@@ -9,7 +9,7 @@ https://camo.githubusercontent.com/915b7be44ada53c290eb157634330494ebe3e30a/6874
 
 
 
-~~TODO: Add licensing information from go-ethereum to README.md~~
+~~TODO: Add licensing information from go-ethereum to README.md~~ Friday, August 17, 2018
 
 TODO: Finish code for splitting block reward
 
@@ -27,7 +27,11 @@ TODO: Change docker from private repo to public repo
 
 TODO: Docker images for automatic node roll out for instant expansion of network, redundant explorer, redundant bootnodes etc
 
+Explorer: https://explorer.cmmx.commercium.net _note that this explorer is currently down until the TODO for the explorer has been completed_
 
+Ethstats: http://node01.cmmx.commercium.net/
+
+Pool: http://pool.cmmx.commercium.net/
 
 
 ## Contribution
