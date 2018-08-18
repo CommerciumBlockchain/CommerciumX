@@ -26,7 +26,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/docker/docker/pkg/reexec"
 	"github.com/anthony19114/commerciumx/accounts"
 	"github.com/anthony19114/commerciumx/accounts/keystore"
 	"github.com/anthony19114/commerciumx/internal/cmdtest"
@@ -34,6 +33,7 @@ import (
 	"github.com/anthony19114/commerciumx/p2p"
 	"github.com/anthony19114/commerciumx/rpc"
 	"github.com/anthony19114/commerciumx/swarm"
+	"github.com/docker/docker/pkg/reexec"
 )
 
 func init() {

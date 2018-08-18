@@ -24,9 +24,9 @@ import (
 	"os"
 	"os/signal"
 
-	"syscall"
 	"runtime"
 	"strings"
+	"syscall"
 
 	"github.com/anthony19114/commerciumx/core"
 	"github.com/anthony19114/commerciumx/core/types"

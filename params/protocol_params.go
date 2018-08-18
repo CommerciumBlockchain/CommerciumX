@@ -23,8 +23,8 @@ var (
 )
 
 const (
-	GasLimitBoundDivisor uint64 = 1024    // The bound divisor of the gas limit, used in update calculations.
-	MinGasLimit          uint64 = 5000    // Minimum the gas limit may ever be.
+	GasLimitBoundDivisor uint64 = 1024      // The bound divisor of the gas limit, used in update calculations.
+	MinGasLimit          uint64 = 5000      // Minimum the gas limit may ever be.
 	GenesisGasLimit      uint64 = 134217728 // Gas limit of the Genesis block.
 
 	MaximumExtraDataSize  uint64 = 32    // Maximum size extra data may be after Genesis.
@@ -80,8 +80,8 @@ const (
 )
 
 var (
-	DifficultyBoundDivisor = big.NewInt(2048)   // The bound divisor of the difficulty, used in the update calculations.
+	DifficultyBoundDivisor = big.NewInt(2048)        // The bound divisor of the difficulty, used in the update calculations.
 	GenesisDifficulty      = big.NewInt(17179869184) // Difficulty of the Genesis block.
 	MinimumDifficulty      = big.NewInt(17179869184) // The minimum that the difficulty may ever be.
-	DurationLimit          = big.NewInt(30)     // The decision boundary on the blocktime duration used to determine whether difficulty should go up or not.
+	DurationLimit          = big.NewInt(30)          // The decision boundary on the blocktime duration used to determine whether difficulty should go up or not.
 )

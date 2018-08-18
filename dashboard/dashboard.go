@@ -34,11 +34,11 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/elastic/gosigar"
 	"github.com/anthony19114/commerciumx/log"
 	"github.com/anthony19114/commerciumx/p2p"
 	"github.com/anthony19114/commerciumx/params"
 	"github.com/anthony19114/commerciumx/rpc"
+	"github.com/elastic/gosigar"
 	"github.com/rcrowley/go-metrics"
 	"golang.org/x/net/websocket"
 )

@@ -21,12 +21,12 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/anthony19114/commerciumx/common"
 	"github.com/anthony19114/commerciumx/consensus/ethash"
 	"github.com/anthony19114/commerciumx/core/vm"
 	"github.com/anthony19114/commerciumx/ethdb"
 	"github.com/anthony19114/commerciumx/params"
+	"github.com/davecgh/go-spew/spew"
 )
 
 func TestDefaultGenesisBlock(t *testing.T) {

@@ -121,7 +121,7 @@ func newCppEthereumGenesisSpec(network string, genesis *core.Genesis) (*cppEther
 	spec.Genesis.MixHash = genesis.Mixhash
 	spec.Genesis.Difficulty = (*hexutil.Big)(genesis.Difficulty)
 	spec.Genesis.Author = genesis.Coinbase
-        spec.Params.GasLimitBoundDivisor = (hexutil.Uint64)(params.GasLimitBoundDivisor)
+	spec.Params.GasLimitBoundDivisor = (hexutil.Uint64)(params.GasLimitBoundDivisor)
 	spec.Genesis.Timestamp = (hexutil.Uint64)(genesis.Timestamp)
 	spec.Genesis.ParentHash = genesis.ParentHash
 	spec.Genesis.ExtraData = (hexutil.Bytes)(genesis.ExtraData)
@@ -279,7 +279,7 @@ func newParityChainSpec(network string, genesis *core.Genesis, bootnodes []strin
 	spec.Engine.Ethash.Params.EIP160Transition = genesis.Config.EIP155Block.Uint64()
 	spec.Engine.Ethash.Params.EIP161abcTransition = genesis.Config.EIP158Block.Uint64()
 	spec.Engine.Ethash.Params.EIP161dTransition = genesis.Config.EIP158Block.Uint64()
-//	spec.Engine.Ethash.Params.EIP649Reward = (*hexutil.Big)(ethash.ByzantiumBlockReward)
+	//	spec.Engine.Ethash.Params.EIP649Reward = (*hexutil.Big)(ethash.ByzantiumBlockReward)
 	spec.Engine.Ethash.Params.EIP100bTransition = genesis.Config.ByzantiumBlock.Uint64()
 	spec.Engine.Ethash.Params.EIP649Transition = genesis.Config.ByzantiumBlock.Uint64()
 

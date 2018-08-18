@@ -24,12 +24,12 @@ import (
 	"net"
 	"os"
 
-	"github.com/docker/docker/pkg/reexec"
 	"github.com/anthony19114/commerciumx/crypto"
 	"github.com/anthony19114/commerciumx/node"
 	"github.com/anthony19114/commerciumx/p2p"
 	"github.com/anthony19114/commerciumx/p2p/discover"
 	"github.com/anthony19114/commerciumx/rpc"
+	"github.com/docker/docker/pkg/reexec"
 )
 
 // Node represents a node in a simulation network which is created by a

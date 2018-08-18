@@ -32,12 +32,12 @@ import (
 	"time"
 	"unsafe"
 
-	mmap "github.com/edsrzf/mmap-go"
 	"github.com/anthony19114/commerciumx/common"
 	"github.com/anthony19114/commerciumx/consensus"
 	"github.com/anthony19114/commerciumx/core/types"
 	"github.com/anthony19114/commerciumx/log"
 	"github.com/anthony19114/commerciumx/rpc"
+	mmap "github.com/edsrzf/mmap-go"
 	"github.com/hashicorp/golang-lru/simplelru"
 	metrics "github.com/rcrowley/go-metrics"
 )
@@ -396,21 +396,22 @@ type mineResult struct {
 	nonce     types.BlockNonce
 	mixDigest common.Hash
 	hash      common.Hash
- 	errc chan error
+	errc      chan error
 }
- // hashrate wraps the hash rate submitted by the remote sealer.
+
+// hashrate wraps the hash rate submitted by the remote sealer.
 type hashrate struct {
 	id   common.Hash
 	ping time.Time
 	rate uint64
- 	done chan struct{}
+	done chan struct{}
 }
- // sealWork wraps a seal work package for remote sealer.
+
+// sealWork wraps a seal work package for remote sealer.
 type sealWork struct {
 	errc chan error
 	res  chan [3]string
 }
-
 
 // Ethash is a consensus engine based on proot-of-work implementing the ethash
 // algorithm.
@@ -643,13 +644,13 @@ func (ethash *Ethash) Hashrate() float64 {
 		return ethash.hashrate.Rate1()
 	}
 	var res = make(chan uint64, 1)
- 	select {
+	select {
 	case ethash.fetchRateCh <- res:
 	case <-ethash.exitCh:
 		// Return local hashrate only if ethash is stopped.
 		return ethash.hashrate.Rate1()
 	}
- 	// Gather total submitted hash rate of remote sealers.
+	// Gather total submitted hash rate of remote sealers.
 	return ethash.hashrate.Rate1() + float64(<-res)
 }
 

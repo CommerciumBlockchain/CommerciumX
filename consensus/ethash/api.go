@@ -13,19 +13,23 @@
 //
 // You should have received a copy of the GNU Lesser General Public License
 // along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
- package ethash
- import (
+package ethash
+
+import (
 	"errors"
- 	"github.com/anthony19114/commerciumx/common"
+	"github.com/anthony19114/commerciumx/common"
 	"github.com/anthony19114/commerciumx/common/hexutil"
 	"github.com/anthony19114/commerciumx/core/types"
 )
- var errEthashStopped = errors.New("ethash stopped")
- // API exposes ethash related methods for the RPC interface.
+
+var errEthashStopped = errors.New("ethash stopped")
+
+// API exposes ethash related methods for the RPC interface.
 type API struct {
 	ethash *Ethash // Make sure the mode of ethash is normal.
 }
- // GetWork returns a work package for external miner.
+
+// GetWork returns a work package for external miner.
 //
 // The work package consists of 3 strings:
 //   result[0] - 32 bytes hex encoded current block header pow-hash
@@ -35,31 +39,32 @@ func (api *API) GetWork() ([3]string, error) {
 	if api.ethash.config.PowMode != ModeNormal && api.ethash.config.PowMode != ModeTest {
 		return [3]string{}, errors.New("not supported")
 	}
- 	var (
+	var (
 		workCh = make(chan [3]string, 1)
 		errc   = make(chan error, 1)
 	)
- 	select {
+	select {
 	case api.ethash.fetchWorkCh <- &sealWork{errc: errc, res: workCh}:
 	case <-api.ethash.exitCh:
 		return [3]string{}, errEthashStopped
 	}
- 	select {
+	select {
 	case work := <-workCh:
 		return work, nil
 	case err := <-errc:
 		return [3]string{}, err
 	}
 }
- // SubmitWork can be used by external miner to submit their POW solution.
+
+// SubmitWork can be used by external miner to submit their POW solution.
 // It returns an indication if the work was accepted.
 // Note either an invalid solution, a stale work a non-existent work will return false.
 func (api *API) SubmitWork(nonce types.BlockNonce, hash, digest common.Hash) bool {
 	if api.ethash.config.PowMode != ModeNormal && api.ethash.config.PowMode != ModeTest {
 		return false
 	}
- 	var errc = make(chan error, 1)
- 	select {
+	var errc = make(chan error, 1)
+	select {
 	case api.ethash.submitWorkCh <- &mineResult{
 		nonce:     nonce,
 		mixDigest: digest,
@@ -69,10 +74,11 @@ func (api *API) SubmitWork(nonce types.BlockNonce, hash, digest common.Hash) boo
 	case <-api.ethash.exitCh:
 		return false
 	}
- 	err := <-errc
+	err := <-errc
 	return err == nil
 }
- // SubmitHashrate can be used for remote miners to submit their hash rate.
+
+// SubmitHashrate can be used for remote miners to submit their hash rate.
 // This enables the node to report the combined hash rate of all miners
 // which submit work through this node.
 //
@@ -82,17 +88,18 @@ func (api *API) SubmitHashRate(rate hexutil.Uint64, id common.Hash) bool {
 	if api.ethash.config.PowMode != ModeNormal && api.ethash.config.PowMode != ModeTest {
 		return false
 	}
- 	var done = make(chan struct{}, 1)
- 	select {
+	var done = make(chan struct{}, 1)
+	select {
 	case api.ethash.submitRateCh <- &hashrate{done: done, rate: uint64(rate), id: id}:
 	case <-api.ethash.exitCh:
 		return false
 	}
- 	// Block until hash rate submitted successfully.
+	// Block until hash rate submitted successfully.
 	<-done
- 	return true
+	return true
 }
- // GetHashrate returns the current hashrate for local CPU miner and remote miner.
+
+// GetHashrate returns the current hashrate for local CPU miner and remote miner.
 func (api *API) GetHashrate() uint64 {
 	return uint64(api.ethash.Hashrate())
 }

@@ -22,7 +22,6 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/anthony19114/commerciumx/consensus/ethash"
 	"github.com/anthony19114/commerciumx/core"
 	"github.com/anthony19114/commerciumx/core/state"
@@ -30,6 +29,7 @@ import (
 	"github.com/anthony19114/commerciumx/ethdb"
 	"github.com/anthony19114/commerciumx/params"
 	"github.com/anthony19114/commerciumx/trie"
+	"github.com/davecgh/go-spew/spew"
 )
 
 func TestNodeIterator(t *testing.T) {

@@ -33,19 +33,18 @@ import (
 	"github.com/anthony19114/commerciumx/core/types"
 	"github.com/anthony19114/commerciumx/params"
 	set "gopkg.in/fatih/set.v0"
-
 )
 
 // Ethash proof-of-work protocol constants.
 var (
 	CommerciumXBlockReward *big.Int = new(big.Int).Mul(big.NewInt(20), big.NewInt(1e+18))
-	apostille *big.Int = new(big.Int).Mul(big.NewInt(12), big.NewInt(1e+18))
-	maxUncles                       = 2                 // Maximum number of uncles allowed in a single block
-	allowedFutureBlockTime          = 30 * time.Second  // Max time from current time allowed for blocks, before they're considered future blocks
+	apostille              *big.Int = new(big.Int).Mul(big.NewInt(12), big.NewInt(1e+18))
+	maxUncles                       = 2                // Maximum number of uncles allowed in a single block
+	allowedFutureBlockTime          = 30 * time.Second // Max time from current time allowed for blocks, before they're considered future blocks
 )
 
 var f interface{}
-	
+
 // Various error messages to mark blocks invalid. These should be private to
 // prevent engine specific errors from being referenced in the remainder of the
 // codebase, inherently breaking if the engine is swapped out. Please put common
@@ -299,7 +298,6 @@ func (ethash *Ethash) CalcDifficulty(chain consensus.ChainReader, time uint64, p
 	//return big.NewInt(1)
 }
 
-
 // CalcDifficulty is the difficulty adjustment algorithm. It returns
 // the difficulty that a new block should have when created at time
 // given the parent block's time and difficulty.
@@ -322,6 +320,7 @@ func isForked(s, head *big.Int) bool {
 	}
 	return s.Cmp(head) <= 0
 }
+
 // Some weird constants to avoid constant memory allocs for them.
 var (
 	expDiffPeriod = big.NewInt(100000)
@@ -353,6 +352,7 @@ func calcDifficultyCommerciumX(time uint64, parent *types.Header) *big.Int {
 	}
 	return diff
 }
+
 // calcDifficultyByzantium is the difficulty adjustment algorithm. It returns
 // the difficulty that a new block should have when created at time given the
 // parent block's time and difficulty. The calculation uses the Byzantium rules.
@@ -580,12 +580,11 @@ func accumulateRewards(config *params.ChainConfig, state *state.StateDB, header 
 	var apostille *big.Int = new(big.Int).Mul(big.NewInt(12), wei)
 	var splitreward int64 = 0
 
-
 	if header.Number.Int64() > splitreward {
 		CommerciumXBlockReward.Sub(CommerciumXBlockReward, new(big.Int).Mul(big.NewInt(20), wei))
 		apostille.Add(apostille, new(big.Int).Mul(big.NewInt(12), wei))
 	}
-	
+
 	reward := new(big.Int).Set(CommerciumXBlockReward)
 	r := new(big.Int)
 	for _, uncle := range uncles {
@@ -601,7 +600,3 @@ func accumulateRewards(config *params.ChainConfig, state *state.StateDB, header 
 	state.AddBalance(header.Coinbase, reward)
 	state.AddBalance(common.HexToAddress("0x0000000000000000000000000000000000000000"), apostille)
 }
-
-
-
-

@@ -25,15 +25,15 @@ import (
 	"math/big"
 	"strings"
 
-        "github.com/anthony19114/commerciumx/common"
-        "github.com/anthony19114/commerciumx/common/hexutil"
-        "github.com/anthony19114/commerciumx/common/math"
-        "github.com/anthony19114/commerciumx/core/state"
-        "github.com/anthony19114/commerciumx/core/types"
-        "github.com/anthony19114/commerciumx/ethdb"
-        "github.com/anthony19114/commerciumx/log"
-        "github.com/anthony19114/commerciumx/params"
-        "github.com/anthony19114/commerciumx/rlp"
+	"github.com/anthony19114/commerciumx/common"
+	"github.com/anthony19114/commerciumx/common/hexutil"
+	"github.com/anthony19114/commerciumx/common/math"
+	"github.com/anthony19114/commerciumx/core/state"
+	"github.com/anthony19114/commerciumx/core/types"
+	"github.com/anthony19114/commerciumx/ethdb"
+	"github.com/anthony19114/commerciumx/log"
+	"github.com/anthony19114/commerciumx/params"
+	"github.com/anthony19114/commerciumx/rlp"
 )
 
 //go:generate gencodec -type Genesis -field-override genesisSpecMarshaling -out gen_genesis.go

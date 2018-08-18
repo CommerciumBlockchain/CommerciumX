@@ -33,10 +33,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/anthony19114/commerciumx/common"
 	"github.com/anthony19114/commerciumx/crypto"
 	"github.com/anthony19114/commerciumx/rlp"
+	"github.com/davecgh/go-spew/spew"
 )
 
 func init() {
