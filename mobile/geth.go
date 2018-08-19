@@ -80,7 +80,7 @@ var defaultNodeConfig = &NodeConfig{
 	BootstrapNodes:        FoundationBootnodes(),
 	MaxPeers:              100,
 	EthereumEnabled:       true,
-	EthereumNetworkID:     1,
+	EthereumNetworkID:     1911472,
 	EthereumDatabaseCache: 16,
 }
 

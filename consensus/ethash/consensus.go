@@ -23,8 +23,7 @@ import (
 	"math/big"
 	"runtime"
 	"time"
-	//"ethereum_genesis_addr"
-	//"encoding/json"
+
 	"github.com/anthony19114/commerciumx/common"
 	"github.com/anthony19114/commerciumx/common/math"
 	"github.com/anthony19114/commerciumx/consensus"
@@ -37,13 +36,11 @@ import (
 
 // Ethash proof-of-work protocol constants.
 var (
-	CommerciumXBlockReward *big.Int = new(big.Int).Mul(big.NewInt(20), big.NewInt(1e+18))
-	apostille              *big.Int = new(big.Int).Mul(big.NewInt(12), big.NewInt(1e+18))
-	maxUncles                       = 2                // Maximum number of uncles allowed in a single block
-	allowedFutureBlockTime          = 30 * time.Second // Max time from current time allowed for blocks, before they're considered future blocks
+	initReward		*big.Int = big.NewInt(1e+18) 
+	apostilleBaseReward	*big.Int = big.NewInt(8e+18)     
+	maxUncles                        = 2 
+	allowedFutureBlockTime           = 30 * time.Second  // Max time from current time allowed for blocks, before they're considered future blocks
 )
-
-var f interface{}
 
 // Various error messages to mark blocks invalid. These should be private to
 // prevent engine specific errors from being referenced in the remainder of the
@@ -291,11 +288,8 @@ func (ethash *Ethash) verifyHeader(chain consensus.ChainReader, header, parent *
 // CalcDifficulty is the difficulty adjustment algorithm. It returns
 // the difficulty that a new block should have when created at time
 // given the parent block's time and difficulty.
-
 func (ethash *Ethash) CalcDifficulty(chain consensus.ChainReader, time uint64, parent *types.Header) *big.Int {
 	return CalcDifficulty(chain.Config(), time, parent)
-	// difficulty for the new block during dev to be static
-	//return big.NewInt(1)
 }
 
 // CalcDifficulty is the difficulty adjustment algorithm. It returns
@@ -304,22 +298,19 @@ func (ethash *Ethash) CalcDifficulty(chain consensus.ChainReader, time uint64, p
 func CalcDifficulty(config *params.ChainConfig, time uint64, parent *types.Header) *big.Int {
 	next := new(big.Int).Add(parent.Number, big1)
 	switch {
-	case isForked(big.NewInt(2000001), next):
-		return calcDifficultyCommerciumX(time, parent)
 	case config.IsByzantium(next):
 		return calcDifficultyByzantium(time, parent)
 	case config.IsHomestead(next):
 		return calcDifficultyHomestead(time, parent)
 	default:
-		return calcDifficultyCommerciumX(time, parent)
+		return calcDifficultyFrontier(time, parent)
 	}
 }
-func isForked(s, head *big.Int) bool {
-	if s == nil || head == nil {
-		return false
-	}
-	return s.Cmp(head) <= 0
-}
+
+// Apostille Address for block reward split
+var (
+	apostilleca = common.HexToAddress("0x3c11e92efeb12a1f076eed8d0b719c667231a923")
+)
 
 // Some weird constants to avoid constant memory allocs for them.
 var (
@@ -331,27 +322,6 @@ var (
 	bigMinus99    = big.NewInt(-99)
 	big2999999    = big.NewInt(2999999)
 )
-
-//Diff calc from Frontier rules modified without exponential factor.
-func calcDifficultyCommerciumX(time uint64, parent *types.Header) *big.Int {
-	diff := new(big.Int)
-	adjust := new(big.Int).Div(parent.Difficulty, big10)
-	bigTime := new(big.Int)
-	bigParentTime := new(big.Int)
-
-	bigTime.SetUint64(time)
-	bigParentTime.Set(parent.Time)
-
-	if bigTime.Sub(bigTime, bigParentTime).Cmp(params.DurationLimit) < 0 {
-		diff.Add(parent.Difficulty, adjust)
-	} else {
-		diff.Sub(parent.Difficulty, adjust)
-	}
-	if diff.Cmp(params.MinimumDifficulty) < 0 {
-		diff.Set(params.MinimumDifficulty)
-	}
-	return diff
-}
 
 // calcDifficultyByzantium is the difficulty adjustment algorithm. It returns
 // the difficulty that a new block should have when created at time given the
@@ -382,7 +352,7 @@ func calcDifficultyByzantium(time uint64, parent *types.Header) *big.Int {
 	if x.Cmp(bigMinus99) < 0 {
 		x.Set(bigMinus99)
 	}
-	// parent_diff + (parent_diff / 2048 * max((2 if len(parent.uncles) else 1) - ((timestamp - parent.timestamp) // 9), -99))
+	// (parent_diff + parent_diff // 2048 * max(1 - (block_timestamp - parent_timestamp) // 10, -99))
 	y.Div(parent.Difficulty, params.DifficultyBoundDivisor)
 	x.Mul(y, x)
 	x.Add(parent.Difficulty, x)
@@ -392,7 +362,7 @@ func calcDifficultyByzantium(time uint64, parent *types.Header) *big.Int {
 		x.Set(params.MinimumDifficulty)
 	}
 	// calculate a fake block numer for the ice-age delay:
-	//   https://github.com/ethereum/EIPs/pull/669
+        //   https://github.com/ethereum/EIPs/pull/669
 	//   fake_block_number = min(0, block.number - 3_000_000
 	fakeBlockNumber := new(big.Int)
 	if parent.Number.Cmp(big2999999) >= 0 {
@@ -416,7 +386,7 @@ func calcDifficultyByzantium(time uint64, parent *types.Header) *big.Int {
 // the difficulty that a new block should have when created at time given the
 // parent block's time and difficulty. The calculation uses the Homestead rules.
 func calcDifficultyHomestead(time uint64, parent *types.Header) *big.Int {
-	// https://github.com/ethereum/EIPs/blob/master/EIPS/eip-2.md
+        // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-2.md
 	// algorithm:
 	// diff = (parent_diff +
 	//         (parent_diff / 2048 * max(1 - (block_timestamp - parent_timestamp) // 10, -99))
@@ -511,7 +481,7 @@ func (ethash *Ethash) VerifySeal(chain consensus.ChainReader, header *types.Head
 	}
 	// Sanity check that the block number is below the lookup table size (60M blocks)
 	number := header.Number.Uint64()
-	if number/epochLength >= maxEpoch {
+	if number/epochLength >= uint64(len(cacheSizes)) {
 		// Go < 1.7 cannot calculate new cache/dataset sizes (no fast prime check)
 		return errNonceOutOfRange
 	}
@@ -519,18 +489,14 @@ func (ethash *Ethash) VerifySeal(chain consensus.ChainReader, header *types.Head
 	if header.Difficulty.Sign() <= 0 {
 		return errInvalidDifficulty
 	}
-
 	// Recompute the digest and PoW value and verify against the header
 	cache := ethash.cache(number)
+
 	size := datasetSize(number)
 	if ethash.config.PowMode == ModeTest {
 		size = 32 * 1024
 	}
-	digest, result := hashimotoLight(size, cache.cache, header.HashNoNonce().Bytes(), header.Nonce.Uint64())
-	// Caches are unmapped in a finalizer. Ensure that the cache stays live
-	// until after the call to hashimotoLight so it's not unmapped while being used.
-	runtime.KeepAlive(cache)
-
+	digest, result := hashimotoLight(size, cache, header.HashNoNonce().Bytes(), header.Nonce.Uint64())
 	if !bytes.Equal(header.MixDigest[:], digest) {
 		return errInvalidMixDigest
 	}
@@ -567,6 +533,9 @@ func (ethash *Ethash) Finalize(chain consensus.ChainReader, header *types.Header
 var (
 	big8  = big.NewInt(8)
 	big32 = big.NewInt(32)
+	big45 = big.NewInt(45)
+	big55 = big.NewInt(55)
+	big100 = big.NewInt(100)
 )
 
 // AccumulateRewards credits the coinbase of the given block with the mining
@@ -574,29 +543,44 @@ var (
 // included uncles. The coinbase of each uncle block is also rewarded.
 func accumulateRewards(config *params.ChainConfig, state *state.StateDB, header *types.Header, uncles []*types.Header) {
 
-	// Accumulate the rewards for the miner and any included uncles
-	var wei *big.Int = big.NewInt(1e+18)
-	var CommerciumXBlockReward *big.Int = new(big.Int).Mul(big.NewInt(20), wei)
-	var apostille *big.Int = new(big.Int).Mul(big.NewInt(12), wei)
-	var splitreward int64 = 0
-
-	if header.Number.Int64() > splitreward {
-		CommerciumXBlockReward.Sub(CommerciumXBlockReward, new(big.Int).Mul(big.NewInt(20), wei))
-		apostille.Add(apostille, new(big.Int).Mul(big.NewInt(12), wei))
+	// Select the correct block reward based on chain progression
+	blockReward := initReward
+	if config.IsApostille(header.Number) {
+		blockReward = apostilleBaseReward
 	}
-
-	reward := new(big.Int).Set(CommerciumXBlockReward)
+	// Accumulate the rewards for the miner and any included uncles
+	reward := new(big.Int).Set(blockReward)
 	r := new(big.Int)
 	for _, uncle := range uncles {
 		r.Add(uncle.Number, big8)
 		r.Sub(r, header.Number)
-		r.Mul(r, CommerciumXBlockReward)
+		r.Mul(r, blockReward)
 		r.Div(r, big8)
 		state.AddBalance(uncle.Coinbase, r)
 
-		r.Div(CommerciumXBlockReward, big32)
+		r.Div(blockReward, big32)
 		reward.Add(reward, r)
 	}
-	state.AddBalance(header.Coinbase, reward)
-	state.AddBalance(common.HexToAddress("0x0000000000000000000000000000000000000000"), apostille)
+
+	// Split reward for minerReward and apostilleReward
+	if config.IsApostille(header.Number) {
+
+		// Allocate 45% of reward to apostille.
+		apostilleReward := new(big.Int).Set(reward)
+		apostilleReward.Div(apostilleReward, big100)
+		apostilleReward.Mul(apostilleReward, big45)
+
+		// Allocate 55% of reward to miners.
+		minerReward := new(big.Int).Set(reward)
+		minerReward.Div(minerReward, big100)
+		minerReward.Mul(minerReward, big55)
+		minerReward.Add(minerReward, r)
+
+		// AddBalance to miners and apostille..
+		state.AddBalance(header.Coinbase, minerReward)
+		state.AddBalance(apostilleca, apostilleReward)
+	} else {
+		reward.Add(reward, r)
+		state.AddBalance(header.Coinbase, reward)
+	}
 }
