@@ -11,7 +11,7 @@ https://camo.githubusercontent.com/915b7be44ada53c290eb157634330494ebe3e30a/6874
 
 ~~TODO: Add licensing information from go-ethereum to README.md~~ Friday, August 17, 2018
 
-TODO: Finish code for splitting block reward
+~~TODO: Finish code for splitting block reward~~ Saturday, August 18, 2018
 
 TODO: Code for block scraper for custom explorer due to change of consensus
 

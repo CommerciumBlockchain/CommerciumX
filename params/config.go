@@ -40,6 +40,7 @@ var (
 		EIP155Block:    big.NewInt(0),
 		EIP158Block:    big.NewInt(0),
 		ByzantiumBlock: nil,
+                ApostilleBlock: big.NewInt(100000),
 
 		Ethash: new(EthashConfig),
 	}
@@ -55,6 +56,7 @@ var (
 		EIP155Block:    big.NewInt(10),
 		EIP158Block:    big.NewInt(10),
 		ByzantiumBlock: nil,
+                ApostilleBlock: big.NewInt(100000),
 
 		Ethash: new(EthashConfig),
 	}
@@ -117,6 +119,8 @@ type ChainConfig struct {
 
 	ByzantiumBlock *big.Int `json:"byzantiumBlock,omitempty"` // Byzantium switch block (nil = no fork, 0 = already on byzantium)
 
+        ApostilleBlock *big.Int `json:"apostilleBlock,omitempty"` // Apostille switch block 100000
+
 	// Various consensus engines
 	Ethash *EthashConfig `json:"ethash,omitempty"`
 	Clique *CliqueConfig `json:"clique,omitempty"`
@@ -152,15 +156,10 @@ func (c *ChainConfig) String() string {
 	default:
 		engine = "unknown"
 	}
-	return fmt.Sprintf("{ChainID: %v Homestead: %v DAO: %v DAOSupport: %v EIP150: %v EIP155: %v EIP158: %v Byzantium: %v Engine: %v}",
+	return fmt.Sprintf("{ChainID: %v Homestead: %v ApostilleBlock: %v  Engine: %v}",
 		c.ChainId,
 		c.HomesteadBlock,
-		c.DAOForkBlock,
-		c.DAOForkSupport,
-		c.EIP150Block,
-		c.EIP155Block,
-		c.EIP158Block,
-		c.ByzantiumBlock,
+		c.ApostilleBlock,
 		engine,
 	)
 }
@@ -185,6 +184,10 @@ func (c *ChainConfig) IsEIP155(num *big.Int) bool {
 
 func (c *ChainConfig) IsEIP158(num *big.Int) bool {
 	return isForked(c.EIP158Block, num)
+}
+
+func (c *ChainConfig) IsApostille(num *big.Int) bool {
+        return isForked(c.ApostilleBlock, num)
 }
 
 func (c *ChainConfig) IsByzantium(num *big.Int) bool {
@@ -318,6 +321,7 @@ type Rules struct {
 	ChainId                                   *big.Int
 	IsHomestead, IsEIP150, IsEIP155, IsEIP158 bool
 	IsByzantium                               bool
+        IsApostille                               bool
 }
 
 func (c *ChainConfig) Rules(num *big.Int) Rules {
@@ -325,5 +329,5 @@ func (c *ChainConfig) Rules(num *big.Int) Rules {
 	if chainId == nil {
 		chainId = new(big.Int)
 	}
-	return Rules{ChainId: new(big.Int).Set(chainId), IsHomestead: c.IsHomestead(num), IsEIP150: c.IsEIP150(num), IsEIP155: c.IsEIP155(num), IsEIP158: c.IsEIP158(num), IsByzantium: c.IsByzantium(num)}
+	return Rules{ChainId: new(big.Int).Set(chainId), IsHomestead: c.IsHomestead(num), IsEIP150: c.IsEIP150(num), IsEIP155: c.IsEIP155(num), IsEIP158: c.IsEIP158(num), IsByzantium: c.IsByzantium(num), IsApostille: c.IsApostille(num)}
 }

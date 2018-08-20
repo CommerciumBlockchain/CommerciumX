@@ -9,6 +9,7 @@
         "durationLimit": "0xd",
         "blockReward": "0x1158e460913d00000",
         "registrar": "0x81a4b044831c4f12ba601adb9274516939e9b8a2",
+	"apostilleTransition": 0,
         "homesteadTransition": 0,
         "eip150Transition": 0,
         "eip155Transition": 0,
